@@ -1,0 +1,55 @@
+<div *ngIf="test">
+  <div class="card w-60" *ngIf="currQuestion">
+    <div class="mx-3 mt-2 mb-4 h5">
+      {{ currQuestion.question.questionText }}
+    </div>
+    <form
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      class="ms-5 me-3"
+      id="options"
+    >
+      <label
+        class="options d-block mb-2"
+        *ngFor="let option of currQuestion.question.choices; let i = index"
+      >
+        <input
+          *ngIf="!test.completed"
+          type="radio"
+          formControlName="options"
+          name="options"
+          [value]="i"
+        />
+        {{ option }}
+        <i
+          class="bi-check"
+          style="color: green; vertical-align: middle"
+          *ngIf="
+            currQuestion.isAnswered && currQuestion.question.answer == option
+          "
+        ></i>
+        <i
+          class="bi-x"
+          style="color: red; vertical-align: middle"
+          *ngIf="
+            currQuestion.isAnswered &&
+            !currQuestion.isCorrect &&
+            currQuestion.userAnswer == option
+          "
+        ></i>
+      </label>
+      <div class="d-flex justify-content-center mb-2">
+        <button
+          *ngIf="!currQuestion.isAnswered"
+          [disabled]="!form.valid"
+          class="btn btn-primary sm"
+        >
+          Submit
+        </button>
+        <button *ngIf="currQuestion.isAnswered" class="btn btn-primary sm">
+          Next
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

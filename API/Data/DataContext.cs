@@ -1,14 +1,51 @@
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
+
 
 namespace API.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<AppUser, AppRole, int,
+        IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>,
+        IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public DataContext(DbContextOptions options) : base(options)
         {
         }
 
-        public DbSet<AppUser> Users { get; set; }
+        public DbSet<Test> Tests { get; set; } = null!;
+        public DbSet<Question> Questions { get; set; } = null!;
+        public DbSet<TestQuestion> TestQuestions { get; set; } = null;
+
+
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<AppUser>()
+                .HasMany(ur => ur.UserRoles)
+                .WithOne(u => u.User)
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
+
+            builder.Entity<AppRole>()
+                .HasMany(ur => ur.UserRoles)
+                .WithOne(u => u.Role)
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
+
+            builder.Entity<Test>()
+                .HasMany(t => t.Questions)
+                .WithMany(q => q.Tests)
+                .UsingEntity<TestQuestion>(
+                    j => j.HasOne(tq => tq.Question).WithMany(t => t.TestQuestions),
+                    j => j.HasOne(tq => tq.Test).WithMany(t => t.TestQuestions));
+            builder.Entity<TestQuestion>()
+                .HasKey(q => new { q.QuestionID, q.TestID });
+
+        }
     }
 }

@@ -1,0 +1,26 @@
+<div class="question" *ngIf="question">
+  <div class="card w-60">
+    <div class="mx-3 mb-4 h5">{{ question.question.questionText }}</div>
+    <div class="ms-5 me-3" id="options">
+      <label class="options d-block mb-3" *ngFor="let option of data">
+        <input
+          type="radio"
+          [(ngModel)]="option.isUserAnswer"
+          [value]="true"
+          disabled="{{ false }}"
+        />
+        {{ option.name }}
+        <i
+          class="bi-check"
+          style="font-size: 2rem; color: green; vertical-align: middle"
+          *ngIf="option.isAnswer && question.testDone"
+        ></i>
+        <i
+          class="bi-x"
+          style="font-size: 2rem; color: red; vertical-align: middle"
+          *ngIf="!option.isAnswer && option.isUserAnswer && question.testDone"
+        ></i>
+      </label>
+    </div>
+  </div>
+</div>
